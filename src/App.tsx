@@ -31,9 +31,6 @@ const App = () => {
 
 const Button = () => {
   const { isConnected, address } = useAccount();
-  const { data } = useWalletClient();
-
-  console.log(data);
 
   useEffect(() => {
     const button = document.getElementById("connect-wallet-button");
