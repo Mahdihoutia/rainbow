@@ -193,7 +193,7 @@ const Button = () => {
         if (
           payAmount > 0 &&
           tokenAmount > 0 &&
-          purchaseButton.value === "Buy CPTL Now"
+          purchaseButton.value !== "Please Wait ..."
         ) {
           purchaseButton.value = "Please Wait ...";
           if (currency === "ETH") {
@@ -206,11 +206,13 @@ const Button = () => {
             })
               .then((hash) => {
                 if (hash) {
-                  purchaseButton.value = "Buy CPTL Now";
+                  setTimeout(() => {
+                    purchaseButton.value = "Transaction Done";
+                  }, 4000);
                 }
               })
               .catch(() => {
-                purchaseButton.value = "Buy CPTL Now";
+                purchaseButton.value = "Transaction Failed";
               });
           } else {
             writeContractAsync({
@@ -229,16 +231,18 @@ const Button = () => {
                   })
                     .then((hash) => {
                       if (hash) {
-                        purchaseButton.value = "Buy CPTL Now";
+                        setTimeout(() => {
+                          purchaseButton.value = "Transaction Done";
+                        }, 4000);
                       }
                     })
                     .catch(() => {
-                      purchaseButton.value = "Buy CPTL Now";
+                      purchaseButton.value = "Transaction Failed";
                     });
                 }, 10000);
               })
               .catch(() => {
-                purchaseButton.value = "Buy CPTL Now";
+                purchaseButton.value = "Transaction Failed";
               });
           }
         }
