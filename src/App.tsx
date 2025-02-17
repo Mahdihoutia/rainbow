@@ -2,16 +2,19 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { useWalletClient, WagmiProvider } from "wagmi";
-import { mainnet, polygon, optimism, arbitrum, base } from "wagmi/chains";
+import { WagmiProvider, useAccount, useWriteContract } from "wagmi";
+import { mainnet } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useAccount } from "wagmi";
 import { useEffect } from "react";
+import abi from "../abi.json";
+import usdtSepoliaAbi from "../usdt-sepolia-abi.json";
+// import usdtMainnetAbi from "../usdt-mainnet-abi.json";
+import { Contract, formatEther, JsonRpcProvider, parseEther } from "ethers";
 
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "37c77faf882bb36825d1fcbe3c3efdd1", //fba012a114ce0e6474c64e62403781f6
-  chains: [mainnet, polygon, optimism, arbitrum, base],
+  chains: [mainnet],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 
@@ -31,6 +34,56 @@ const App = () => {
 
 const Button = () => {
   const { isConnected, address } = useAccount();
+  const { writeContractAsync } = useWriteContract();
+
+  const contractAddress = "0xC807E667219871437a0199BF85De2d4EB3bF1fc0";
+
+  const provider = new JsonRpcProvider(
+    "https://eth-sepolia.g.alchemy.com/v2/UTPI8OhCrX59bBAOfxaWRn9Pp9nzAfPN"
+  );
+  // provider = new ethers.BrowserProvider(window.ethereum);
+  const contract = new Contract(contractAddress, abi, provider);
+  const init = async () => {
+    const currentStage = document.getElementById("current-stage");
+    if (currentStage) {
+      const stage = await contract.getCurrentStage();
+      currentStage.innerText = `Stage ${parseFloat(stage)}`;
+    }
+
+    const tokenForSell = document.getElementById("token-for-sell");
+    if (tokenForSell) {
+      const currentStageTokenAvailable =
+        await contract.getCurrentStageTokenAvailable();
+      tokenForSell.innerText = `Token for sell: ${parseFloat(
+        currentStageTokenAvailable
+      )}`;
+    }
+
+    const CPTLPrice = document.getElementById("cptl-price");
+    if (CPTLPrice) {
+      const currentStageTokenPrice = await contract.getCurrentStageTokenPrice();
+      CPTLPrice.innerText = `1 CPTL = ${formatEther(currentStageTokenPrice)}$`;
+    }
+
+    const nextStagePrice = document.getElementById("next-stage-price");
+    if (nextStagePrice) {
+      const currentStage = parseInt(await contract.getCurrentStage());
+      if (currentStage === 5) {
+        nextStagePrice.innerText = ` - - - `;
+      } else {
+        const stageTokenPrice = await contract.getStageTokenPrice(
+          currentStage + 1
+        );
+        nextStagePrice.innerText = `1 CPTL = ${formatEther(stageTokenPrice)}$`;
+      }
+    }
+
+    const tokenAddress = document.getElementById("token-address");
+    if (tokenAddress) {
+      const currentAddress = await contract.crypturalContract();
+      tokenAddress.innerText = currentAddress.toString();
+    }
+  };
 
   useEffect(() => {
     const button = document.getElementById("connect-wallet-button");
@@ -41,10 +94,161 @@ const Button = () => {
     }
   }, [isConnected]);
 
+  useEffect(() => {
+    init();
+    let currency = "ETH";
+    let payAmount = 0;
+    let tokenAmount = 0;
+    const currencyEth = document.getElementById("currency-eth");
+    const currencyUsdt = document.getElementById("currency-usdt");
+    const inputPay: any = document.getElementById("pay-amount");
+    const inputCPTL: any = document.getElementById("cptl-amount");
+    const purchaseButton: any = document.getElementById("purchase-btn");
+
+    if (currencyEth && currencyUsdt && inputPay && inputCPTL) {
+      currencyEth.addEventListener("click", async () => {
+        currency = "ETH";
+        console.log("ETH");
+        const pay = parseFloat(inputPay.value);
+        const currentTokenPrice = parseFloat(
+          formatEther(await contract.getCurrentStageTokenPrice())
+        );
+        payAmount = pay;
+        if (currency === "ETH") {
+          const ethPrice = parseFloat(await contract.getEthPriceNow()) / 1e8;
+
+          inputCPTL.value = ((pay * ethPrice) / currentTokenPrice).toFixed(2);
+          tokenAmount = parseFloat(
+            ((pay * ethPrice) / currentTokenPrice).toFixed(2)
+          );
+        } else {
+          inputCPTL.value = (pay / currentTokenPrice).toFixed(2);
+          tokenAmount = parseFloat((pay / currentTokenPrice).toFixed(2));
+        }
+      });
+
+      currencyUsdt.addEventListener("click", async () => {
+        currency = "USDT";
+        console.log("USDT");
+        const pay = parseFloat(inputPay.value);
+        const currentTokenPrice = parseFloat(
+          formatEther(await contract.getCurrentStageTokenPrice())
+        );
+        payAmount = pay;
+        if (currency === "ETH") {
+          const ethPrice = parseFloat(await contract.getEthPriceNow()) / 1e8;
+
+          inputCPTL.value = ((pay * ethPrice) / currentTokenPrice).toFixed(2);
+          tokenAmount = parseFloat(
+            ((pay * ethPrice) / currentTokenPrice).toFixed(2)
+          );
+        } else {
+          inputCPTL.value = (pay / currentTokenPrice).toFixed(2);
+          tokenAmount = parseFloat((pay / currentTokenPrice).toFixed(2));
+        }
+      });
+
+      inputPay.addEventListener("keyup", async () => {
+        const pay = parseFloat(inputPay.value);
+        const currentTokenPrice = parseFloat(
+          formatEther(await contract.getCurrentStageTokenPrice())
+        );
+        payAmount = pay;
+        if (currency === "ETH") {
+          const ethPrice = parseFloat(await contract.getEthPriceNow()) / 1e8;
+
+          inputCPTL.value = ((pay * ethPrice) / currentTokenPrice).toFixed(2);
+          tokenAmount = parseFloat(
+            ((pay * ethPrice) / currentTokenPrice).toFixed(2)
+          );
+        } else {
+          inputCPTL.value = (pay / currentTokenPrice).toFixed(2);
+          tokenAmount = parseFloat((pay / currentTokenPrice).toFixed(2));
+        }
+      });
+
+      inputCPTL.addEventListener("keyup", async () => {
+        const amount = parseFloat(inputCPTL.value);
+        const currentTokenPrice = parseFloat(
+          formatEther(await contract.getCurrentStageTokenPrice())
+        );
+        tokenAmount = parseFloat(inputCPTL.value);
+        if (currency === "ETH") {
+          const ethPrice = parseFloat(await contract.getEthPriceNow()) / 1e8;
+
+          inputPay.value = ((amount / ethPrice) * currentTokenPrice).toFixed(2);
+          payAmount = parseFloat(
+            ((amount / ethPrice) * currentTokenPrice).toFixed(2)
+          );
+        } else {
+          inputPay.value = (amount * currentTokenPrice).toFixed(2);
+          payAmount = parseFloat((amount * currentTokenPrice).toFixed(2));
+        }
+      });
+    }
+
+    if (purchaseButton) {
+      purchaseButton.addEventListener("click", async () => {
+        console.log(payAmount, tokenAmount);
+        if (
+          payAmount > 0 &&
+          tokenAmount > 0 &&
+          purchaseButton.value === "Buy CPTL Now"
+        ) {
+          purchaseButton.value = "Please Wait ...";
+          if (currency === "ETH") {
+            writeContractAsync({
+              address: contractAddress,
+              abi,
+              functionName: "buyTokensByEth",
+              args: [],
+              value: parseEther(payAmount.toString()),
+            })
+              .then((hash) => {
+                if (hash) {
+                  purchaseButton.value = "Buy CPTL Now";
+                }
+              })
+              .catch(() => {
+                purchaseButton.value = "Buy CPTL Now";
+              });
+          } else {
+            writeContractAsync({
+              address: "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
+              abi: usdtSepoliaAbi,
+              functionName: "approve",
+              args: [contractAddress, payAmount * 1e6],
+            })
+              .then(() => {
+                setTimeout(() => {
+                  writeContractAsync({
+                    address: contractAddress,
+                    abi,
+                    functionName: "buyTokensByUsdt",
+                    args: [payAmount * 1e6],
+                  })
+                    .then((hash) => {
+                      if (hash) {
+                        purchaseButton.value = "Buy CPTL Now";
+                      }
+                    })
+                    .catch(() => {
+                      purchaseButton.value = "Buy CPTL Now";
+                    });
+                }, 10000);
+              })
+              .catch(() => {
+                purchaseButton.value = "Buy CPTL Now";
+              });
+          }
+        }
+      });
+    }
+  }, []);
+
   return (
     <>
       <ConnectButton />
-      {/* <div id="connect-wallet-button">Connect Wallet</div> */}
     </>
   );
 };
