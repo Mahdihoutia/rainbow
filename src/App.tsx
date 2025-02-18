@@ -3,7 +3,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider, useAccount, useWriteContract } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { mainnet, sepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import abi from "../abi.json";
@@ -14,7 +14,7 @@ import { Contract, formatEther, JsonRpcProvider, parseEther } from "ethers";
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "37c77faf882bb36825d1fcbe3c3efdd1", //fba012a114ce0e6474c64e62403781f6
-  chains: [mainnet],
+  chains: [mainnet, sepolia],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 
@@ -87,10 +87,15 @@ const Button = () => {
 
   useEffect(() => {
     const button = document.getElementById("connect-wallet-button");
+    const purchaseButton: any = document.getElementById("purchase-btn");
     if (button) {
       button.innerText = isConnected
         ? ((address?.slice(0, 4) + "..." + address?.slice(-4)) as string)
         : "Connect Wallet";
+    }
+
+    if (purchaseButton) {
+      purchaseButton.value = isConnected ? "Buy CPTL Now" : "Connect Wallet";
     }
   }, [isConnected]);
 
@@ -188,12 +193,22 @@ const Button = () => {
     }
 
     if (purchaseButton) {
+      purchaseButton.value = "Connect Wallet";
       purchaseButton.addEventListener("click", async () => {
         console.log(payAmount, tokenAmount);
+        if (purchaseButton.value === "Connect Wallet") {
+          const walletConnectButton = document.getElementById(
+            "connect-wallet-button"
+          );
+          if (walletConnectButton) {
+            walletConnectButton.click();
+          }
+        }
         if (
           payAmount > 0 &&
           tokenAmount > 0 &&
-          purchaseButton.value !== "Please Wait ..."
+          purchaseButton.value !== "Please Wait ..." &&
+          purchaseButton.value !== "Connect Wallet"
         ) {
           purchaseButton.value = "Please Wait ...";
           if (currency === "ETH") {
