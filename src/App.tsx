@@ -36,7 +36,7 @@ const Button = () => {
   const { isConnected, address } = useAccount();
   const { writeContractAsync } = useWriteContract();
 
-  const contractAddress = "0xC807E667219871437a0199BF85De2d4EB3bF1fc0";
+  const contractAddress = "0x53BbE7c4c8018B0fb086f7D31666ce1FcbD6F6e7";
 
   const provider = new JsonRpcProvider(
     "https://eth-sepolia.g.alchemy.com/v2/UTPI8OhCrX59bBAOfxaWRn9Pp9nzAfPN"
