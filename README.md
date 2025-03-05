@@ -2,7 +2,7 @@
 
 Cryptural Token:
 
-    mainnet:
+    mainnet: 0xB17fAd49caF67Cd4A95F59a967C30d312dd851ea
 
     sepolia: 0x0f3A1773BCd5a99adAb3108876862a52fC907a96
 
@@ -14,12 +14,12 @@ USDT:
 
 Price Feed:
 
-    mainnet: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
+    mainnet: 0xee9f2375b4bdf6387aa8265dd4fb8f16512a1d46
 
     sepolia: 0x694AA1769357215DE4FAC081bf1f309aDC325306
 
 # Deployed Smart Contract Address
 
-    mainnet:
+    mainnet: 0xF5063895B884739A9EaAb35aEB5DC6753Da02716
 
     sepolia: 0xC807E667219871437a0199BF85De2d4EB3bF1fc0
