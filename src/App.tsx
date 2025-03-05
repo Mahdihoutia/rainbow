@@ -7,8 +7,8 @@ import { mainnet, sepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import abi from "../abi.json";
-import usdtSepoliaAbi from "../usdt-sepolia-abi.json";
-// import usdtMainnetAbi from "../usdt-mainnet-abi.json";
+// import usdtSepoliaAbi from "../usdt-sepolia-abi.json";
+import usdtMainnetAbi from "../usdt-mainnet-abi.json";
 import { Contract, formatEther, JsonRpcProvider, parseEther } from "ethers";
 
 const config = getDefaultConfig({
@@ -36,10 +36,10 @@ const Button = () => {
   const { isConnected, address } = useAccount();
   const { writeContractAsync } = useWriteContract();
 
-  const contractAddress = "0xf1650C6622368b7eBF618aF48c393022fb8D9096";
+  const contractAddress = "0xF5063895B884739A9EaAb35aEB5DC6753Da02716";
 
   const provider = new JsonRpcProvider(
-    "https://eth-sepolia.g.alchemy.com/v2/UTPI8OhCrX59bBAOfxaWRn9Pp9nzAfPN"
+    "https://eth-mainnet.g.alchemy.com/v2/W2VDNhIGRT1VTcH2_G5kwtSd-fbw76MK"
   );
   // provider = new ethers.BrowserProvider(window.ethereum);
   const contract = new Contract(contractAddress, abi, provider);
@@ -231,8 +231,8 @@ const Button = () => {
               });
           } else {
             writeContractAsync({
-              address: "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0",
-              abi: usdtSepoliaAbi,
+              address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+              abi: usdtMainnetAbi,
               functionName: "approve",
               args: [contractAddress, payAmount * 1e6],
             })
