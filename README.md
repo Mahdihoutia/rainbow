@@ -14,7 +14,7 @@ USDT:
 
 Price Feed:
 
-    mainnet: 0xee9f2375b4bdf6387aa8265dd4fb8f16512a1d46
+    mainnet: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
 
     sepolia: 0x694AA1769357215DE4FAC081bf1f309aDC325306
 
