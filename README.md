@@ -2,7 +2,7 @@
 
 Cryptural Token:
 
-    mainnet: 0xB17fAd49caF67Cd4A95F59a967C30d312dd851ea
+    mainnet: 0xfc7443fBF8331C11a4d803FaFe0E7C22202d4E9d
 
     sepolia: 0x0f3A1773BCd5a99adAb3108876862a52fC907a96
 
@@ -20,6 +20,6 @@ Price Feed:
 
 # Deployed Smart Contract Address
 
-    mainnet: 0xF5063895B884739A9EaAb35aEB5DC6753Da02716
+    mainnet: 0x71d4Ae24d9dc1d148D188A46225d9D1B15cA8f72
 
     sepolia: 0xC807E667219871437a0199BF85De2d4EB3bF1fc0
